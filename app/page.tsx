@@ -29,10 +29,11 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
         const [resGempa, resHistory, resCuaca] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/v1/gempa/terkini"),
-          fetch("http://127.0.0.1:8000/api/v1/gempa/aceh"),
-          fetch("http://127.0.0.1:8000/api/v1/cuaca/aceh")
+          fetch(`${API_URL}/api/v1/gempa/terkini`),
+          fetch(`${API_URL}/api/v1/gempa/aceh`),
+          fetch(`${API_URL}/api/v1/cuaca/aceh`)
         ]);
 
         setGempa(await resGempa.json());
