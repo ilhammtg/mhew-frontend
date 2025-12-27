@@ -29,7 +29,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://web-production-69450.up.railway.app";
         const [resGempa, resHistory, resCuaca] = await Promise.all([
           fetch(`${API_URL}/api/v1/gempa/terkini`),
           fetch(`${API_URL}/api/v1/gempa/aceh`),
@@ -66,7 +66,7 @@ export default function Dashboard() {
     </div>
   );
 
-  const [lat, lon] = gempa?.Coordinates?.split(",").map(Number) || [5.5, 95.3];
+  const [lat, lon] = gempa?.Coordinates ? gempa.Coordinates.split(',').map(Number) : [5.5, 95.3];
   const shakemap = gempa?.Shakemap ? `https://data.bmkg.go.id/DataMKG/TEWS/${gempa.Shakemap}` : null;
 
   return (

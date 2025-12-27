@@ -12,7 +12,8 @@ export default function QuickStats({ devices, history }: QuickStatsProps) {
     useEffect(() => {
         const fetchPrecip = async () => {
             try {
-                const res = await fetch("http://127.0.0.1:8000/api/v1/cuaca/precip");
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://web-production-69450.up.railway.app";
+                const res = await fetch(`${API_URL}/api/v1/cuaca/precip`);
                 const data = await res.json();
                 setPrecipData(data);
             } catch (e) {
@@ -57,16 +58,16 @@ export default function QuickStats({ devices, history }: QuickStatsProps) {
 
             {/* Flood Risk Card */}
             <div className={`col-span-2 p-5 rounded-2xl border backdrop-blur-sm transition-colors group ${maxRisk === "DANGER" ? "bg-red-900/40 border-red-500/50 hover:border-red-500" :
-                    maxRisk === "WARNING" ? "bg-orange-900/40 border-orange-500/50 hover:border-orange-500" :
-                        "bg-slate-900/60 border-white/5 hover:border-blue-500/30"
+                maxRisk === "WARNING" ? "bg-orange-900/40 border-orange-500/50 hover:border-orange-500" :
+                    "bg-slate-900/60 border-white/5 hover:border-blue-500/30"
                 }`}>
                 <div className={`flex items-center gap-3 mb-3 ${maxRisk === "DANGER" ? "text-red-400" :
-                        maxRisk === "WARNING" ? "text-orange-400" :
-                            "text-blue-400"
+                    maxRisk === "WARNING" ? "text-orange-400" :
+                        "text-blue-400"
                     }`}>
                     <div className={`p-2 rounded-lg transition-colors ${maxRisk === "DANGER" ? "bg-red-500/10 group-hover:bg-red-500/20" :
-                            maxRisk === "WARNING" ? "bg-orange-500/10 group-hover:bg-orange-500/20" :
-                                "bg-blue-500/10 group-hover:bg-blue-500/20"
+                        maxRisk === "WARNING" ? "bg-orange-500/10 group-hover:bg-orange-500/20" :
+                            "bg-blue-500/10 group-hover:bg-blue-500/20"
                         }`}>
                         <CloudRain size={18} />
                     </div>
@@ -78,8 +79,8 @@ export default function QuickStats({ devices, history }: QuickStatsProps) {
                         <p className="text-[10px] text-slate-500 font-bold uppercase mt-1">Curah Hujan 24J</p>
                     </div>
                     <div className={`px-3 py-1 rounded-lg border text-[10px] font-bold uppercase ${maxRisk === "DANGER" ? "bg-red-500/20 border-red-500/50 text-red-400 animate-pulse" :
-                            maxRisk === "WARNING" ? "bg-orange-500/20 border-orange-500/50 text-orange-400" :
-                                "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                        maxRisk === "WARNING" ? "bg-orange-500/20 border-orange-500/50 text-orange-400" :
+                            "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
                         }`}>
                         {maxRisk === "DANGER" ? "BAHAYA" : maxRisk === "WARNING" ? "WASPADA" : "AMAN"}
                     </div>
