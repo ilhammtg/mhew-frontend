@@ -18,7 +18,7 @@ export default function QuickStats({ devices, history }: QuickStatsProps) {
                     headers: { "X-API-KEY": API_KEY }
                 });
                 const data = await res.json();
-                setPrecipData(data);
+                setPrecipData(Array.isArray(data) ? data : []);
             } catch (e) {
                 console.error(e);
             }
@@ -28,13 +28,15 @@ export default function QuickStats({ devices, history }: QuickStatsProps) {
         return () => clearInterval(interval);
     }, []);
 
-    const maxRisk = precipData.reduce((acc, curr) => {
+    const safePrecipData = Array.isArray(precipData) ? precipData : [];
+
+    const maxRisk = safePrecipData.reduce((acc, curr) => {
         if (curr.status === "DANGER") return "DANGER";
         if (curr.status === "WARNING" && acc !== "DANGER") return "WARNING";
         return acc;
     }, "SAFE");
 
-    const maxPrecip = Math.max(...precipData.map(d => d.total_precip_24h), 0);
+    const maxPrecip = Math.max(...safePrecipData.map(d => d.total_precip_24h), 0);
 
     return (
         <div className="grid grid-cols-2 gap-4">
