@@ -88,7 +88,15 @@ export default function PointForecast() {
     }, [userLoc]);
 
     if (loading) return <div className="animate-pulse h-64 bg-slate-900/50 rounded-3xl border border-white/5"></div>;
-    if (!weather) return null;
+
+    if (!weather) return (
+        <div className="flex flex-col items-center justify-center h-64 bg-slate-900/50 rounded-[2.5rem] border border-white/10 p-8 text-center">
+            <CloudRain size={48} className="text-slate-600 mb-4" />
+            <h3 className="text-xl font-bold text-slate-400">Data Cuaca Belum Tersedia</h3>
+            <p className="text-sm text-slate-500 mt-2">Menunggu pembaruan dari server monitor...</p>
+            <p className="text-[10px] text-slate-600 mt-4 uppercase tracking-widest">Auto-Retry dalam 5 menit</p>
+        </div>
+    );
 
     // Helper for Icon
     const getIcon = (desc: string) => {
