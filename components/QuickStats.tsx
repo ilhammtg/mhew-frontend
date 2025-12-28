@@ -13,7 +13,10 @@ export default function QuickStats({ devices, history }: QuickStatsProps) {
         const fetchPrecip = async () => {
             try {
                 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://web-production-69450.up.railway.app";
-                const res = await fetch(`${API_URL}/api/v1/cuaca/precip`);
+                const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "RAHASIA_KUNCI_API_ANDA";
+                const res = await fetch(`${API_URL}/api/v1/cuaca/precip`, {
+                    headers: { "X-API-KEY": API_KEY }
+                });
                 const data = await res.json();
                 setPrecipData(data);
             } catch (e) {

@@ -5,10 +5,9 @@ import dynamic from "next/dynamic";
 import Header from "../components/Header";
 import EarthquakeCard from "../components/EarthquakeCard";
 import QuickStats from "../components/QuickStats";
-import WeatherCard from "../components/WeatherCard";
+import PointForecast from "../components/PointForecast";
 import ShakemapCard from "../components/ShakemapCard";
 import IoTList from "../components/IoTList";
-import WeatherWidget from "../components/WeatherWidget";
 import HistoryList from "../components/HistoryList";
 
 const Map = dynamic(() => import("../components/Map"), { ssr: false });
@@ -30,17 +29,25 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://web-production-69450.up.railway.app";
-        const [resGempa, resHistory, resCuaca] = await Promise.all([
-          fetch(`${API_URL}/api/v1/gempa/terkini`),
-          fetch(`${API_URL}/api/v1/gempa/aceh`),
-          fetch(`${API_URL}/api/v1/cuaca/aceh`)
+        const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "RAHASIA_KUNCI_API_ANDA";
+
+        const headers = { "X-API-KEY": API_KEY };
+
+        const [resGempa, resHistory] = await Promise.all([
+          fetch(`${API_URL}/api/v1/gempa/terkini`, { headers }),
+          fetch(`${API_URL}/api/v1/gempa/aceh`, { headers }),
         ]);
 
-        setGempa(await resGempa.json());
-        setHistory(await resHistory.json());
-        setCuaca(await resCuaca.json());
+        const gempaData = await resGempa.json();
+        const historyData = await resHistory.json();
+
+        setGempa(gempaData?.error ? null : gempaData);
+        setHistory(Array.isArray(historyData) ? historyData : []);
+
       } catch (err) {
         console.error("Fetch error:", err);
+        setGempa(null);
+        setHistory([]);
       } finally {
         setLoading(false);
       }
@@ -78,19 +85,19 @@ export default function Dashboard() {
       <div className="max-w-[1920px] mx-auto relative z-10">
         <Header currentTime={currentTime} />
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* --- LEFT COLUMN: MAIN ALERT (4 cols) --- */}
-          <div className="xl:col-span-4 flex flex-col gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* --- LEFT COLUMN: HIGH URGENCY (3 cols) --- */}
+          <div className="lg:col-span-3 flex flex-col gap-6 order-1">
             <EarthquakeCard gempa={gempa} />
             <QuickStats devices={devices} history={history} />
           </div>
 
-          {/* --- MIDDLE COLUMN: MAP & SHAKEMAP (5 cols) --- */}
-          <div className="xl:col-span-5 flex flex-col gap-6">
+          {/* --- MIDDLE COLUMN: VISUALIZATION (6 cols) --- */}
+          <div className="lg:col-span-6 flex flex-col gap-6 order-2">
             {/* MAIN MAP CONTAINER */}
-            <div className="bg-slate-900 border border-slate-800 p-1.5 rounded-[2.5rem] shadow-2xl relative group">
+            <div className="bg-slate-900/50 backdrop-blur-md border border-white/10 p-1.5 rounded-[2.5rem] shadow-2xl relative group overflow-hidden">
               <div className="absolute inset-0 bg-blue-500/5 rounded-[2.5rem] blur-xl group-hover:bg-blue-500/10 transition-colors duration-500"></div>
-              <div className="relative h-[450px] xl:h-[550px] w-full rounded-[2rem] overflow-hidden bg-slate-950 border border-slate-800">
+              <div className="relative h-[600px] w-full rounded-[2rem] overflow-hidden bg-slate-950 border border-slate-800 shadow-inner">
                 <div className="absolute top-6 left-6 z-[400] bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700/50 text-xs font-bold text-white flex gap-3 items-center shadow-lg">
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -102,14 +109,13 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <WeatherCard />
             <ShakemapCard shakemap={shakemap} />
           </div>
 
-          {/* --- RIGHT COLUMN: INFO & WEATHER (3 cols) --- */}
-          <div className="xl:col-span-3 flex flex-col gap-6">
+          {/* --- RIGHT COLUMN: MONITORING & DETAILS (3 cols) --- */}
+          <div className="lg:col-span-3 flex flex-col gap-6 order-3">
+            <PointForecast />
             <IoTList devices={devices} />
-            <WeatherWidget cuaca={cuaca} />
             <HistoryList history={history} />
           </div>
         </div>

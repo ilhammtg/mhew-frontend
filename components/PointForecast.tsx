@@ -17,10 +17,18 @@ export default function PointForecast() {
         const fetchForecast = async () => {
             try {
                 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://web-production-69450.up.railway.app";
-                const res = await fetch(`${API_URL}/api/v1/cuaca/forecast`);
+                const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "RAHASIA_KUNCI_API_ANDA";
+
+                const res = await fetch(`${API_URL}/api/v1/cuaca/point-forecast`, {
+                    headers: { "X-API-KEY": API_KEY }
+                });
+
                 const data = await res.json();
-                if (data.forecast_raw) {
-                    setForecast(data.forecast_raw);
+                // Find the log that contains Windy forecast_raw data
+                const forecastLog = Array.isArray(data) ? data.find((d: any) => d.forecast_raw) : data;
+
+                if (forecastLog?.forecast_raw) {
+                    setForecast(forecastLog.forecast_raw);
                 }
             } catch (e) {
                 console.error(e);
